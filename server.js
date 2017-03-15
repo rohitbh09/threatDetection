@@ -3,7 +3,8 @@ var express    = require('express'),
     request    = require("request");
     path       = require('path');
     formidable = require('formidable');
-    fs         = require('fs');
+    fs         = require('fs'),
+    lineReader = require('reverse-line-reader');
 
 // set the port of our application
 // process.env.PORT lets the port be set by Heroku
@@ -37,13 +38,16 @@ app.post('/uploadSubmit', function(req, res){
   // rename it to it's orignal name
   form.on('file', function(field, file) {
 
-    fs.readFile(file.path, function (err, content) {
-        if (err) {
+    lineReader.eachLine(file.path, function(line) {
+      if( line != "") {
 
-          console.log(err);
-        }
-      console.log(content.toString());
-    })
+        console.log(line);
+        console.log("line==========>");
+      }
+    }).then(function (err) {
+      if (err) throw err;
+      console.log("I'm done!!");
+    });
   });
 
   // log any errors that occur

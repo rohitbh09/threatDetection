@@ -4,7 +4,8 @@ var express    = require('express'),
     path       = require('path');
     formidable = require('formidable');
     fs         = require('fs'),
-    lineReader = require('reverse-line-reader');
+    lineReader = require('reverse-line-reader'),
+    parser = require('http-string-parser');
 
 // set the port of our application
 // process.env.PORT lets the port be set by Heroku
@@ -39,9 +40,43 @@ app.post('/uploadSubmit', function(req, res){
   form.on('file', function(field, file) {
 
     lineReader.eachLine(file.path, function(line) {
+
       if( line != "") {
 
-        console.log(line);
+        var log = {};
+
+        var repLine = line.replace('HTTP/1.1"', "HTTP/1.1"),
+            request = repLine.match(/(".*?"|[^"\s]+)+(?=\s*|\s*$)/g);
+
+        // var lineOpt = line.split(" ");
+        log.HTTP_METHOD              = request[0];
+        log.URL                      = request[1];
+        log.HTTP_VERSION             = request[2];
+        log.ORIGIN_HEADER            = request[3];
+        log.SSL_CIPHER               = request[4];
+        log.SSL_PROTOCOL             = request[5];
+        log.DATETIME                 = request[6];
+        log.LB_NAME                  = request[7];
+        log.CLIENT_IP                = request[8];
+        log.BACKEND_IP               = request[9];
+        log.request_processing_time  = request[10];
+        log.backend_processing_time  = request[11];
+        log.response_processing_time = request[12];
+        log.elb_status_code          = request[13];
+        log.backend_status_code      = request[14];
+        log.received_bytes           = request[15];
+        log.sent_bytes               = request[16];
+
+        if( log.ORIGIN_HEADER == '"MATLAB R2013a"'){
+
+          console.log( "Yes, "+ line);
+        }
+        else {
+
+          console.log( "No, "+ line);
+        }
+        // console.log(lineOp
+        console.log(log);
         console.log("line==========>");
       }
     }).then(function (err) {

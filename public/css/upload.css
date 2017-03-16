@@ -76,5 +76,6 @@ h2 {
 #logOpt {
 
   overflow: auto;
-  height: 500px;
+  max-height: 500px;
+  text-align: left;
 }

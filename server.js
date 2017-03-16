@@ -70,7 +70,7 @@ app.post('/uploadSubmit', function(req, res){
 
         if( log.ORIGIN_HEADER == '"MATLAB R2013a"'){
 
-          outputLog += "<b>Yes</b>, "+ line + "<br/><br/>";
+          outputLog += "<p><b>Yes</b>, "+ line + "</p>";
         }
         else {
 
@@ -79,11 +79,11 @@ app.post('/uploadSubmit', function(req, res){
 
           if ( geo.country == "IN" ) {
 
-            outputLog += "No, "+ line + "<br/><br/>";
+            outputLog += "<p>No, "+ line + "</p>";
           }
           else {
             
-            outputLog += "<b>Yes</b>, "+ line + "<br/><br/>";
+            outputLog += "<p><b>Yes</b>, "+ line + "</p>";
           }
         }
       }

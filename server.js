@@ -2,7 +2,6 @@ var express    = require('express'),
     app        = express(),
     formidable = require('formidable'),
     fs         = require('fs'),
-    uuid       = require('uuid'),
     lineReader = require('reverse-line-reader'),
     geoIpLite  = require('geoip-lite');
 
@@ -31,7 +30,6 @@ app.get('/upload', function(req, res){
 
 app.post('/uploadSubmit', function(req, res){
 
-  var outputLog = "";
   // create an incoming form object
   var form = new formidable.IncomingForm();
 
@@ -39,9 +37,12 @@ app.post('/uploadSubmit', function(req, res){
   // rename it to it's orignal name
   form.on('file', function(field, file) {
 
-    outputLog = ""; 
+    var outputLog = ""; 
+
+    // line reader added to read all log file
     lineReader.eachLine(file.path, function(line) {
 
+      // check line have proper value
       if( line != "") {
 
         var log = {};
@@ -50,41 +51,55 @@ app.post('/uploadSubmit', function(req, res){
             request = repLine.match(/(".*?"|[^"\s]+)+(?=\s*|\s*$)/g);
 
         // var lineOpt = line.split(" ");
-        log.HTTP_METHOD              = request[0];
-        log.URL                      = request[1];
-        log.HTTP_VERSION             = request[2];
-        log.ORIGIN_HEADER            = request[3];
-        log.SSL_CIPHER               = request[4];
-        log.SSL_PROTOCOL             = request[5];
-        log.DATETIME                 = request[6];
-        log.LB_NAME                  = request[7];
-        log.CLIENT_IP                = request[8];
-        log.BACKEND_IP               = request[9];
-        log.request_processing_time  = request[10];
-        log.backend_processing_time  = request[11];
-        log.response_processing_time = request[12];
-        log.elb_status_code          = request[13];
-        log.backend_status_code      = request[14];
-        log.received_bytes           = request[15];
-        log.sent_bytes               = request[16];
+        // log.HTTP_METHOD              = request[0];
+        // log.URL                      = request[1];
+        // log.HTTP_VERSION             = request[2];
+           log.ORIGIN_HEADER            = request[3];
+        // log.SSL_CIPHER               = request[4];
+        // log.SSL_PROTOCOL             = request[5];
+        // log.DATETIME                 = request[6];
+        // log.LB_NAME                  = request[7];
+           log.CLIENT_IP                = request[8];
+        // log.BACKEND_IP               = request[9];
+        // log.request_processing_time  = request[10];
+        // log.backend_processing_time  = request[11];
+        // log.response_processing_time = request[12];
+        // log.elb_status_code          = request[13];
+        // log.backend_status_code      = request[14];
+        // log.received_bytes           = request[15];
+        // log.sent_bytes               = request[16];
 
-        if( log.ORIGIN_HEADER == '"MATLAB R2013a"'){
+        if( typeof log.ORIGIN_HEADER != "undefined" ) {
 
-          outputLog += "<p><b>Yes</b>, "+ line + "</p>";
+          if( log.ORIGIN_HEADER == '"MATLAB R2013a"'){
+
+            outputLog += "<p><b>Yes</b>, "+ line + "</p>";
+          }
+          else {
+
+            if ( typeof log.CLIENT_IP != "undefined" ) {
+
+              var clientIpArr = log.CLIENT_IP.split(":")
+              var geo = geoIpLite.lookup(clientIpArr[0]);
+
+              if ( geo.country == "IN" ) {
+
+                outputLog += "<p>No, "+ line + "</p>";
+              }
+              else {
+
+                outputLog += "<p><b>Yes</b>, "+ line + "</p>";
+              }
+            }
+            else {
+
+              outputLog += "<p><b>Yes</b>, "+ line + "</p>";
+            }
+          }
         }
         else {
 
-          var clientIpArr = log.CLIENT_IP.split(":")
-          var geo = geoIpLite.lookup(clientIpArr[0]);
-
-          if ( geo.country == "IN" ) {
-
-            outputLog += "<p>No, "+ line + "</p>";
-          }
-          else {
-            
-            outputLog += "<p><b>Yes</b>, "+ line + "</p>";
-          }
+          outputLog += "<p><b>Yes</b>, "+ line + "</p>";
         }
       }
     }).then(function (err) {

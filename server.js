@@ -1,11 +1,8 @@
 var express    = require('express'),
     app        = express(),
-    request    = require("request");
-    path       = require('path');
-    formidable = require('formidable');
-    fs         = require('fs'),
+    formidable = require('formidable'),
     lineReader = require('reverse-line-reader'),
-    parser = require('http-string-parser');
+    geoIpLite  = require('geoip-lite');
 
 // set the port of our application
 // process.env.PORT lets the port be set by Heroku
@@ -32,6 +29,7 @@ app.get('/upload', function(req, res){
 
 app.post('/uploadSubmit', function(req, res){
 
+  var outputLog = "";
   // create an incoming form object
   var form = new formidable.IncomingForm();
 
@@ -39,6 +37,7 @@ app.post('/uploadSubmit', function(req, res){
   // rename it to it's orignal name
   form.on('file', function(field, file) {
 
+    outputLog = ""; 
     lineReader.eachLine(file.path, function(line) {
 
       if( line != "") {
@@ -70,31 +69,44 @@ app.post('/uploadSubmit', function(req, res){
         if( log.ORIGIN_HEADER == '"MATLAB R2013a"'){
 
           console.log( "Yes, "+ line);
+          outputLog += "Yes, "+ line;
         }
         else {
 
-          console.log( "No, "+ line);
+          var clientIpArr = log.CLIENT_IP.split(":")
+          var geo = geoIpLite.lookup(clientIpArr[0]);
+
+          if ( geo.country == "IN" ) {
+
+            outputLog += "No, "+ line;
+          }
+          else {
+            
+            outputLog += "Yes, "+ line;
+          }
         }
-        // console.log(lineOp
-        console.log(log);
-        console.log("line==========>");
       }
     }).then(function (err) {
-      if (err) throw err;
-      console.log("I'm done!!");
+      if (err) {
+        res.end('error');
+        return;
+      };
+
+      res.end(outputLog);
+      return;
     });
   });
 
   // log any errors that occur
   form.on('error', function(err) {
 
-    res.end('error');
+    // res.end('error');
   });
 
   // once all the files have been uploaded, send a response to the client
   form.on('end', function() {
 
-    res.end('success');
+    // res.end('success');
   });
 
   // parse the incoming request containing the form data

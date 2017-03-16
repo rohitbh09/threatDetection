@@ -29,6 +29,7 @@ $('#upload-input').on('change', function(){
       contentType: false,
       success: function(data){
           console.log('upload successful!\n' + data);
+          $("#logOpt").html(data);
       },
       xhr: function() {
         // create an XMLHttpRequest

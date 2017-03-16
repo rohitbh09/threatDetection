@@ -1,6 +1,8 @@
 var express    = require('express'),
     app        = express(),
     formidable = require('formidable'),
+    fs         = require('fs'),
+    uuid       = require('uuid'),
     lineReader = require('reverse-line-reader'),
     geoIpLite  = require('geoip-lite');
 
@@ -68,8 +70,7 @@ app.post('/uploadSubmit', function(req, res){
 
         if( log.ORIGIN_HEADER == '"MATLAB R2013a"'){
 
-          console.log( "Yes, "+ line);
-          outputLog += "Yes, "+ line;
+          outputLog += "<b>Yes</b>, "+ line + "<br/><br/>";
         }
         else {
 
@@ -78,11 +79,11 @@ app.post('/uploadSubmit', function(req, res){
 
           if ( geo.country == "IN" ) {
 
-            outputLog += "No, "+ line;
+            outputLog += "No, "+ line + "<br/><br/>";
           }
           else {
             
-            outputLog += "Yes, "+ line;
+            outputLog += "<b>Yes</b>, "+ line + "<br/><br/>";
           }
         }
       }
@@ -90,7 +91,7 @@ app.post('/uploadSubmit', function(req, res){
       if (err) {
         res.end('error');
         return;
-      };
+      }
 
       res.end(outputLog);
       return;

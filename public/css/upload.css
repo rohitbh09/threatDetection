@@ -14,7 +14,7 @@ body {
 }
 
 .row {
-  margin-top: 80px;
+  margin-top: 20px;
 }
 
 .upload-btn {
@@ -66,4 +66,15 @@ h2 {
   .container {
     width: 450px;
   }
+}
+
+.container-log {
+  width: 90%;
+  margin-right: auto;
+  margin-left: auto;
+}
+#logOpt {
+
+  overflow: auto;
+  height: 500px;
 }

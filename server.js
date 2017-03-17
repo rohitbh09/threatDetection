@@ -89,6 +89,7 @@ app.post('/uploadSubmit', function(req, res){
               var clientIpArr = log.CLIENT_IP.split(":")
               var geo = geoIpLite.lookup(clientIpArr[0]);
 
+              console.log(clientIpArr);
               if ( typeof geo.country != "undefined" && geo.country == "IN" ) {
 
                 outputLog += "<p>No, "+ line + "</p>";

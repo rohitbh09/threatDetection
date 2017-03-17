@@ -102,7 +102,7 @@ app.post('/uploadSubmit', function(req, res){
               }
               else {
 
-                outputLog += "<p><b>ERROR</b>, "+ line + "</p>";
+                outputLog += "<p><b>Yes</b>, "+ line + "</p>";
               }
             }
             else {

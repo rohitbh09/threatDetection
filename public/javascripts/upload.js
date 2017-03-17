@@ -27,7 +27,7 @@ $('#upload-input').on('change', function(){
       data: formData,
       processData: false,
       contentType: false,
-      success: function(data){
+      error: function(data){
           console.log('upload successful!\n' + data);
           $("#logOpt").html(data);
       },

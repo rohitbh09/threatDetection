@@ -45,6 +45,9 @@ app.post('/uploadSubmit', function(req, res){
       // check line have proper value
       if( line != "") {
 
+        // console line to check detail
+        console.log(line);
+
         var log = {};
 
         var repLine = line.replace('HTTP/1.1"', "HTTP/1.1"),
@@ -79,16 +82,20 @@ app.post('/uploadSubmit', function(req, res){
 
             if ( typeof log.CLIENT_IP != "undefined" ) {
 
+              console.log("Log file")
+              console.log(log);
+              console.log(log.CLIENT_IP);
+
               var clientIpArr = log.CLIENT_IP.split(":")
               var geo = geoIpLite.lookup(clientIpArr[0]);
 
-              if ( geo.country == "IN" ) {
+              if ( typeof geo.country != "undefined" && geo.country == "IN" ) {
 
                 outputLog += "<p>No, "+ line + "</p>";
               }
               else {
 
-                outputLog += "<p><b>Yes</b>, "+ line + "</p>";
+                outputLog += "<p><b>ERROR</b>, "+ line + "</p>";
               }
             }
             else {
